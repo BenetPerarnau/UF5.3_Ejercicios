@@ -22,26 +22,28 @@ public class Fichero {
 	public static boolean borarr(String cod){
 		
 		try {
+			//creación de un fichero auxiliar donde iremos colocando todos los productos excepto el que queramos borrar
 			 BufferedWriter escribe=Files.newBufferedWriter(path2, 
 					 java.nio.charset.StandardCharsets.UTF_8, java.nio.file.StandardOpenOption.CREATE);
-			
+			//abrimos en modo lectura el fichero donde tenemos la bbdd de productos
 			 BufferedReader stdin=Files.newBufferedReader(path,
 					 		java.nio.charset.StandardCharsets.UTF_8);
-			String linea="";
 			
+			String linea="";	
 			while((linea=stdin.readLine())!=null){
 				String part[]=linea.split(";");
-				if(part[0].equalsIgnoreCase(cod)){
-					//no fa res
-				}else{
+				if(part[0].equalsIgnoreCase(cod)){//si el cod , es el mismo al que queremos borrar no copia en el fichero auxiliar
+					
+				}else{//si el cod, es distinto copia en el fichero auxiliar.
 					
 						escribe.write(part[0]+";"+part[1]+";"+part[2]+";"+part[3]);			
-						escribe.newLine();
-						
+						escribe.newLine();		
+				
 				}
 			}
-			
+			//mueve el contenido del fichero auxiliar al fichero principal
 			Files.move(path2, path, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+			//eliminamos el fichero auxiliar
 			Files.deleteIfExists(path2);
 			escribe.close();
 			stdin.close();
@@ -51,25 +53,20 @@ public class Fichero {
 		}catch (IOException e) {
 			e.printStackTrace();
 			return false;
-		}finally{
-			//escribe.close();
-			//stdin.close();
-		}
-		
-		
+		}	
 		return true;
 	}
 	
 	public static boolean insertar_nuevo(Producto x){
 		
 		try{
-			
+			//abrimos el fichero en modo lectura con la opción append para insertar el nuevo producto en final del fichero
 			BufferedWriter escribe=Files.newBufferedWriter(path, 
 					java.nio.charset.StandardCharsets.UTF_8, java.nio.file.StandardOpenOption.APPEND);			
 			
 			escribe.write(x.getCod()+";"+x.getDesc()+";"+x.getStock()+";"+x.getPrecio());			
 			escribe.newLine();
-			escribe.close();//si no no escribe pq?
+			escribe.close();
 			return true;
 		}catch(InvalidPathException e){
 			System.out.println("Error en leer la ruta del fichero "+e);
@@ -84,28 +81,30 @@ public class Fichero {
 	protected static boolean modificar(String cod, int stock){
 		
 		try{
-			
+			//Creación de un fichero auxiliar, para insertar todos los registros del fichero principal mas la lina modificada.
 			BufferedWriter escribe=Files.newBufferedWriter(path2, 
 					 java.nio.charset.StandardCharsets.UTF_8, java.nio.file.StandardOpenOption.CREATE);
-			
+			//abrir el fichero principal para su lectura
 			BufferedReader stdin=Files.newBufferedReader(path,
 					java.nio.charset.StandardCharsets.UTF_8);
-			String linea="";
 			
+			String linea="";
 			while((linea=stdin.readLine())!=null){
-				String [] part=linea.split(";");
-				
-				if(part[0].equalsIgnoreCase(cod)){
+				String [] part=linea.split(";");	
+				if(part[0].equalsIgnoreCase(cod)){//si el cod es el mismo que el cod a modificar, insertamos en esa linea el nuevo stock
 					
 					escribe.write(part[0]+";"+part[1]+";"+stock+";"+part[3]);			
 					escribe.newLine();		
 					
-				}else{
+				}else{//si no, escribimos tal cual esta en el fichero principal en el auxiliar
+					
 					escribe.write(part[0]+";"+part[1]+";"+part[2]+";"+part[3]);			
 					escribe.newLine();
 				}		
 			}
+			//mueve el contenido del fichero auxiliar al fichero principal
 			Files.move(path2, path, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+			//eliminar el fichero auxiliar
 			Files.deleteIfExists(path2);
 			escribe.close();
 			stdin.close();
@@ -127,9 +126,11 @@ public class Fichero {
 			
 			while((linea=stdin.readLine())!=null){
 				String [] part=linea.split(";");
-				if(part[1].contains(buscar)){
+				if(part[1].contains(buscar)){//encontar si hay coincidencia en el campo desc
 					System.out.println(part[0]+" "+part[1]+" "+part[2]+" "+part[3]);
 					aux=true;
+				}else{
+					//no fa res
 				}
 			}		
 		}catch(IOException e){
@@ -139,24 +140,23 @@ public class Fichero {
 	}
 	protected static boolean buscarcod(String cod){
 		try{
-
+			//metodo usado en dar de baja y modificar stock, se utiliza para comprovar si el cod esixte en el fichero
+			//si no esta, no se podra ni dar de baja ni modificar el stock.
 			BufferedReader stdin=Files.newBufferedReader(path,
 					java.nio.charset.StandardCharsets.UTF_8);
 			String linea="";
 			while((linea=stdin.readLine())!=null){
 				String [] part=linea.split(";");
-				if(part[0].equalsIgnoreCase(cod)){    
+				if(part[0].equalsIgnoreCase(cod)){ //si el cod buscado coincide en alguna linea del fichero retorna true y sera posible dar de baja o modificar stock   
 					return true;
+				}else{
+					//no fa res
 				}
 			}	
 			
 		}catch(IOException e){
 			System.out.println("Error en leer el fichero "+e);
 		}
-		return false;
-		
+		return false;	
 	}
-//System.out.println(e.getKey()+";"+((Producto)e.getValue()).getDesc()+";"+((Producto)e.getValue()).getStock()+";"+((Producto)e.getValue()).getPrecio());
-	
-
 }

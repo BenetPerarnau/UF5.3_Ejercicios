@@ -38,7 +38,6 @@ public class Producto {
 
 	protected void setDesc(String desc) throws Exception{
 		if(desc.length()<1 || desc.length()>20){
-			System.out.println("La que peta => "+desc);
 			throw new Exception("La descripcion no puede estar vacio o contener mas de 20 caracteres.");
 		}else{
 		this.desc = desc;
