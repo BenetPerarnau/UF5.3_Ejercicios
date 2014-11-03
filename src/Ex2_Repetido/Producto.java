@@ -6,6 +6,7 @@ public class Producto {
 	private String desc;//no puede quedar vacio y como maximo 20
 	private double precio;//>0
 	private int stock;//>=0
+	
 	public Producto(){
 		
 	}
